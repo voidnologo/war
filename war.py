@@ -19,33 +19,42 @@ value = {
 }
 
 suits = {
-    'D': 'Diamonds',
-    'C': 'Clubs',
-    'H': 'Hearts',
-    'S': 'Spades',
+    'D': '\u2662',
+    'C': '\u2667',
+    'H': '\u2661',
+    'S': '\u2664',
 }
 
-deck = [{'suit': s, 'value': v} for v in value for s in suits]
+def ante_up(ante, deck, number): 
+    for _ in range(number): 
+        if len(deck) > 1:
+            ante.append(deck.popleft())
+        else:
+            break
+
+def draw_to_ante(ante, deck):
+    card = deck.popleft()
+    ante.append(card)
+    return card
+
+
+deck = [{'suit': s, 'value': v, 'display': '{}{}'.format(v, suits[s])} for v in value for s in suits]
 random.shuffle(deck)
 deck1 = deque(deck[:26])
 deck2 = deque(deck[26:])
-
-# deck2 = deque([{'suit': s, 'value': v} for v in value for s in suits])
-# random.shuffle(deck2)
 
 turn = 1
 ante = []
 
 while len(deck1) > 0 and len(deck2) > 0:
     print('TURN {}'.format(turn))
+    if turn % 2000 == 0:
+        random.shuffle(deck1)
+        random.shuffle(deck2)
     print("D1: {} \t D2: {}".format(len(deck1), len(deck2)))
 
-    card1 = deck1.popleft()
-    card2 = deck2.popleft()
-    ante.append(card1)
-    ante.append(card2)
-    card1['display'] = '{} of {}'.format(card1['value'], suits[card1['suit']])
-    card2['display'] = '{} of {}'.format(card2['value'], suits[card2['suit']])
+    card1 = draw_to_ante(ante, deck1)
+    card2 = draw_to_ante(ante, deck2)
     print("Player One has: {}".format(card1['display']))
     print("Player Two has: {}".format(card2['display']))
     if value[card1['value']] > value[card2['value']]:
@@ -58,20 +67,14 @@ while len(deck1) > 0 and len(deck2) > 0:
         ante = []
     else:
         print("Tie!")
-        if len(deck1) > 1:
-            ante.append(deck1.popleft())
-        if len(deck1) > 1:
-            ante.append(deck1.popleft())
-        if len(deck2) > 1:
-            ante.append(deck2.popleft())
-        if len(deck2) > 1:
-            ante.append(deck2.popleft())
+        ante_up(ante, deck1, 2)
+        ante_up(ante, deck2, 2)
 
     turn += 1
 
 
 print('\n\n<><><><><><><><><><><><><><><><><><><>><')
 if len(deck1) > len(deck2):
-    print("Player One wins the game with {} cards!".format(len(deck1)))
+    print("Player One wins!")
 else:
-    print("Player Two wins the game with {} cards!".format(len(deck2)))
+    print("Player Two wins!")

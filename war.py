@@ -25,12 +25,14 @@ suits = {
     'S': '\u2664',
 }
 
-def ante_up(ante, deck, number): 
-    for _ in range(number): 
+
+def ante_up(ante, deck, number):
+    for _ in range(number):
         if len(deck) > 1:
             ante.append(deck.popleft())
         else:
             break
+
 
 def draw_to_ante(ante, deck):
     card = deck.popleft()
